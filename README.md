@@ -1,17 +1,17 @@
 # crypto_market _analysis
 
-# Crypto Market Analysis Dashboard
+### Crypto Market Analysis Dashboard
 
-## Problem Statement
+### Problem Statement
 
-## Dataset
+### Dataset
 
-## SQL Layer & Transformations
+### SQL Layer & Transformations
 
-## Power BI Dashboard
+### Power BI Dashboard
 
-## Key Insights
+### Key Insights
 
-## Difficulties Faced
+### Difficulties Faced
 
-## Learning Outcomes
+### Learning Outcomes
