@@ -1,0 +1,49 @@
+import requests
+import csv
+from datetime import datetime
+
+COINS = ["bitcoin", "ethereum","solana","ripple"]  
+VS_CURRENCY = "usd"
+DAYS = 7
+
+CSV_FILE = "crypto_prices.csv"
+with open(CSV_FILE, "w", newline="") as file:
+    writer = csv.writer(file)
+
+    writer.writerow([
+        "coin",
+        "timestamp",
+        "price_usd"
+    ])
+    for coin in COINS:
+        url = (
+            f"https://api.coingecko.com/api/v3/coins/"
+            f"{coin}/market_chart?vs_currency={VS_CURRENCY}&days={DAYS}"
+        )
+
+        params = {
+            "vs_currency": VS_CURRENCY,
+            "days": DAYS
+        }
+        response = requests.get(url, params=params)
+
+        if (response.status_code != 200):
+            print(f"{coin} failed ")
+            continue
+
+        data = response.json()
+
+        prices = data["prices"]  
+
+        for ts_ms, price in prices:
+            timestamp = datetime.fromtimestamp(ts_ms / 1000)
+
+            writer.writerow([
+                coin,
+                timestamp,
+                price
+            ])
+
+        print(f"{coin} saved")
+
+print("Crypto data saved to CSV")
