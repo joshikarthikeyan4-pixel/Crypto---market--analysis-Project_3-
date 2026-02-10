@@ -1,0 +1,52 @@
+import psycopg2
+
+# ---------- CONFIG ----------
+DB_NAME = "crypto_db"
+DB_USER = "postgres"
+DB_PASSWORD = "postgres123"
+DB_HOST = "localhost"
+DB_PORT = "5432"
+
+CSV_PATH = r"C:/Crypto -market-data-analysis/crypto_prices.csv"
+# ----------------------------
+
+conn = psycopg2.connect(
+    dbname=DB_NAME,
+    user=DB_USER,
+    password=DB_PASSWORD,
+    host=DB_HOST,
+    port=DB_PORT
+)
+
+cur = conn.cursor()
+
+# 1. Create table
+cur.execute("""
+DROP TABLE IF EXISTS crypto_prices;
+CREATE TABLE crypto_prices (
+    coin VARCHAR(20),
+    timestamp TEXT,
+    price_usd NUMERIC
+);
+""")
+
+conn.commit()
+
+# 2. Load CSV using COPY (this avoids all Windows issues)
+with open(CSV_PATH, 'r', encoding='utf-8') as f:
+    cur.copy_expert("""
+        COPY crypto_prices (coin, timestamp, price_usd)
+        FROM STDIN
+        WITH CSV HEADER
+    """, f)
+
+conn.commit()
+
+# 3. Verify
+cur.execute("SELECT COUNT(*) FROM crypto_prices;")
+print("Rows inserted:", cur.fetchone()[0])
+
+cur.close()
+conn.close()
+
+print("CSV successfully loaded into PostgreSQL")
