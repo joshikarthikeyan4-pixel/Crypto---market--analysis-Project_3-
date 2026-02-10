@@ -1,1 +1,55 @@
+##Checking database
+SELECT current_database();
 
+## Row count (sanity_check)
+SELECT * FROM crypto_prices;
+SELECT COUNT(*) FROM crypto_prices;
+
+## data sanity check()
+SELECT * FROM crypto_prices LIMIT 10;
+
+## Check distinct coins
+SELECT DISTINCT coin FROM crypto_prices;
+
+## Check nulls
+SELECT
+  SUM(CASE WHEN coin IS NULL THEN 1 ELSE 0 END) AS null_coin,
+  SUM(CASE WHEN timestamp IS NULL THEN 1 ELSE 0 END) AS null_ts,
+  SUM(CASE WHEN price_usd IS NULL THEN 1 ELSE 0 END) AS null_price
+FROM crypto_prices;
+
+## Row count (sanity check again)
+SELECT COUNT(*) FROM crypto_prices;
+
+## Peek at data
+SELECT * FROM crypto_prices LIMIT 10;
+
+## Check distinct coins
+SELECT DISTINCT coin FROM crypto_prices;
+
+##creating a SQL-based semantic layer so that downstream tools like Excel and Power BI consume pre-validated logic instead of raw tables
+CREATE OR REPLACE VIEW v_crypto_analysis AS
+SELECT
+  coin,
+  timestamp,
+  price_usd,
+  price_usd - LAG(price_usd)
+    OVER (PARTITION BY coin ORDER BY timestamp) AS daily_change,
+-- NEW COLUMN 1: direction
+  CASE
+    WHEN price_usd - LAG(price_usd) OVER (PARTITION BY coin ORDER BY timestamp) > 0 THEN 'Up'
+    WHEN price_usd - LAG(price_usd) OVER (PARTITION BY coin ORDER BY timestamp) < 0 THEN 'Down'
+    ELSE 'No Change'
+  END AS price_direction,
+
+ ## NEW COLUMN 2: percentage change
+  ROUND(
+    (
+      (price_usd - LAG(price_usd) OVER (PARTITION BY coin ORDER BY timestamp))
+      / NULLIF(LAG(price_usd) OVER (PARTITION BY coin ORDER BY timestamp), 0)
+    ) * 100,
+    2
+  ) AS pct_change
+   FROM crypto_prices;
+   -- sanity check
+SELECT * FROM v_crypto_analysis LIMIT 10;
