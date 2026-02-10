@@ -1,1 +1,78 @@
+##TECHNICAL REPORT
+Crypto Market Analysis Project 
+1. Project Overview (Technical)
+This project implements an end-to-end analytics pipeline for cryptocurrency market data using a layered architecture. The system emphasizes semantic correctness, upstream logic consolidation, and tool-appropriate responsibility separation.
+Pipeline: PostgreSQL → SQL Views → Excel (ODBC) → Power BI Desktop
+2. Data Architecture & Semantic Layer
+2.1 Bronze Layer (Database)
+Raw cryptocurrency time-series data ingested into PostgreSQL.
+Base table preserves original schema and values without transformations.
+Purpose: data immutability and reproducibility.
+2.2 Silver Layer (SQL Semantic View)
+Analytical logic centralized in a PostgreSQL view (v_crypto_analysis).
+Implemented window functions (LAG) partitioned by asset and ordered by timestamp.
+Derived metrics:
+daily_change
+price_direction
+pct_change (safe division using NULLIF)
+Rationale:
+Prevents duplication of logic across Excel and Power BI.
+Ensures consistent metric definitions across consumers.
+Enables downstream tools to operate on analytics-ready data.
+3. Excel Integration (Validation Layer)
+3.1 Bronze Excel
+Excel connected to PostgreSQL via ODBC.
+Directly consumes the SQL view without local transformations.
+Used to verify schema evolution and data refresh behavior.
+3.2 Silver Excel (Pivot-Based Validation)
+Pivot tables created for:
+Coin-level aggregation
+Directional analysis (Up, Down, No Change)
+Confirmed correctness of SQL-derived metrics before BI ingestion.
+4. Power BI Desktop Implementation
+Power BI used strictly as a presentation and exploration layer.
+All metrics precomputed in SQL.
+Visuals limited to KPI cards, line charts, bar charts, and slicers.
+No Power Query transformations or DAX-based business logic.
+5. Technical Difficulties Faced
+5.1 Power BI Stability & Crash Issues
+Power BI Desktop crashed during Power Query access despite small dataset size.
+Auto-recovery failed to restore bookmarks and navigation logic.
+Required rebuilding visuals from last saved .pbix.
+Skill demonstrated: resilience and recovery under unstable tooling.
+5.2 Conditional Formatting Complexity (Card Visuals)
+Conditional formatting for card callout values was difficult to locate.
+No direct UI option to remove rules.
+Required redefining numeric ranges and explicitly handling blank states.
+Skill demonstrated: advanced understanding of Power BI formatting mechanics.
+5.3 Inconsistent Filter Behavior (Coin Slicer)
+Coin slicer intermittently displayed incomplete categories.
+Debugging involved:
+Visual-level filters
+Page-level filters
+Report-level filters
+Interaction settings
+Issue likely exacerbated by internal Power BI state after crashes.
+Skill demonstrated: systematic filter-context debugging.
+5.4 Bookmark & Button Fragility
+Bookmark navigation tightly coupled with:
+Visual visibility
+Selection state
+Filter context
+Post-crash instability rendered bookmarks unreliable.
+Decision taken to remove advanced navigation.
+Skill demonstrated: trade-off analysis prioritizing stability.
+5.5 Over-Engineering Decisions Avoided
+Considered AI dashboard generators, heavy Dockerization, and advanced navigation.
+Rejected due to:
+Limited analytical value
+Paid or cloud dependencies
+Low relevance for Data Analyst interviews
+Skill demonstrated: engineering judgment and scope control.
+6. Technical Learning Outcomes:-
+Deepened understanding of Power BI filter context and formatting rules.
+Reinforced importance of SQL-based semantic layers.
+Learned practical recovery strategies for BI tool crashes.
+Improved discipline in avoiding unnecessary transformations and features.
+Gained confidence handling real-world tooling instability.
 
