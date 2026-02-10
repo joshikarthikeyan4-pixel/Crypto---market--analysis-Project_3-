@@ -1,0 +1,48 @@
+### BUSINESS REPORT:
+Crypto Market Analysis Project — Business Summary
+1. Business Objective:-
+The goal of this project was to analyze cryptocurrency price movements and present reliable, interpretable insights using industry-standard analytics tools, while ensuring consistency and correctness across the reporting pipeline.
+2. Design Philosophy:-
+Business logic defined once and reused everywhere.
+Visualization tools treated as consumers, not calculators.
+Clarity, accuracy, and stability prioritized over visual novelty.
+3. Data Flow & Governance:=
+Raw price data stored centrally in a database.
+All calculations standardized in a single analytical layer.
+Excel and dashboards consume the same validated metrics, eliminating discrepancies.
+Business benefit:
+Single source of truth and reduced risk of conflicting numbers.
+4. Dashboard Strategy:-
+Focused KPIs highlighting price movement behavior.
+Simple trend and comparison visuals.
+Filters designed to preserve data correctness rather than force advanced UI interactions.
+Outcome:
+Dashboard is easy to interpret, reliable, and suitable for decision discussions.
+5. Business Challenges & Decisions:-
+5.1 Tool Stability Risks
+BI tool instability caused loss of dashboard components.
+Decision: rebuild using simpler, more stable layouts.
+Business impact:
+Reduced risk of report failure during reviews or demos.
+5.2 Feature Trade-offs
+Advanced navigation and automation features were evaluated.
+But Dropped due to:
+1)-Limited business value
+2)-Increased maintenance risk
+3)-Dependency on paid or cloud services
+Business impact:
+Lean, maintainable dashboard aligned with real analyst workflows.
+5.3 Data Integrity vs Visual Complexity
+Continuous time slicers were avoided due to timestamp inconsistencies.
+Chose categorical filtering to preserve data meaning.
+Business impact:
+Prevented misleading trends and incorrect interpretations.
+6. Key Business Learnings:-
+Reliable analytics matter more than feature-rich dashboards.
+Stable, interpretable reports are preferred over complex UI interactions.
+Understanding tool limitations is critical for realistic project delivery.
+Knowing when to stop adding features is a core analytics skill.
+End-to-end ownership ensures accountability and trust in outputs.
+7. Business Value Delivered:-
+A clean, decision-ready analytics dashboard.
+Consistent metrics across tools
